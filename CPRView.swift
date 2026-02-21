@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CPRView: View {
-    @Environment(\\.dismiss) var dismiss
+    @Environment(\.dismiss) var dismiss
     @State private var stepIndex = 0
     let steps = EmergencyData.cprSteps
     

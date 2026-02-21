@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PanicAttackView: View {
-    @Environment(\\.dismiss) var dismiss
+    @Environment(\.dismiss) var dismiss
     @State private var stepIndex = 0
     let steps = EmergencyData.panicAttackSteps
     

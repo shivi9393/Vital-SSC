@@ -33,7 +33,7 @@ struct StepProgressIndicator: View {
     
     var body: some View {
         HStack(spacing: 8) {
-            ForEach(0..<totalSteps, id: \\.self) { index in
+            ForEach(0..<totalSteps, id: \.self) { index in
                 Capsule()
                     .fill(index <= currentStep ? color : color.opacity(0.3))
                     .frame(height: 8)
