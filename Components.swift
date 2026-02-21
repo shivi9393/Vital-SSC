@@ -43,11 +43,32 @@ struct StepProgressIndicator: View {
     }
 }
 
+struct CloseButton: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 18, weight: .bold))
+                Text("Close")
+                    .font(.system(size: 18, weight: .semibold))
+            }
+            .foregroundColor(.white)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background(Color.white.opacity(0.15))
+            .cornerRadius(24)
+        }
+    }
+}
+
 struct StepViewLayout: View {
     let step: EmergencyStep
     let stepIndex: Int
     let totalSteps: Int
     let accentColor: Color
+    var hideIcon: Bool = false
     let onNext: () -> Void
     let onPrevious: (() -> Void)?
     
@@ -58,11 +79,13 @@ struct StepViewLayout: View {
             
             Spacer()
             
-            Image(systemName: step.iconName)
-                .font(.system(size: 120, weight: .regular))
-                .foregroundColor(accentColor)
-                .symbolRenderingMode(.hierarchical)
-                .frame(height: 160)
+            if !hideIcon {
+                Image(systemName: step.iconName)
+                    .font(.system(size: 120, weight: .regular))
+                    .foregroundColor(accentColor)
+                    .symbolRenderingMode(.hierarchical)
+                    .frame(height: 160)
+            }
             
             Text(step.text)
                 .font(Theme.stepFont)
@@ -73,26 +96,31 @@ struct StepViewLayout: View {
             
             Spacer()
             
-            HStack(spacing: 20) {
+            HStack(spacing: 16) {
                 if let onPrevious = onPrevious {
                     Button(action: onPrevious) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.white)
-                            .frame(width: 80, height: 80)
-                            .background(Theme.surface)
-                            .cornerRadius(40)
+                        HStack(spacing: 8) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 20, weight: .bold))
+                            Text("Back")
+                                .font(.system(size: 20, weight: .bold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(height: 70)
+                        .padding(.horizontal, 24)
+                        .background(Color.white.opacity(0.15))
+                        .cornerRadius(35)
                     }
                 }
                 
                 Button(action: onNext) {
                     Text(stepIndex == totalSteps - 1 ? "Finish" : "Next Step")
-                        .font(.system(size: 28, weight: .bold))
+                        .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 80)
+                        .frame(height: 70)
                         .background(accentColor)
-                        .cornerRadius(40)
+                        .cornerRadius(35)
                 }
             }
             .padding(.horizontal, 24)

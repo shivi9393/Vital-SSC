@@ -11,14 +11,7 @@ struct SeizureView: View {
             
             VStack {
                 HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Theme.surface)
-                            .clipShape(Circle())
-                    }
+                    CloseButton(action: { dismiss() })
                     Spacer()
                 }
                 .padding(.horizontal, 24)

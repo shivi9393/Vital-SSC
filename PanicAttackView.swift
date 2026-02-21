@@ -8,26 +8,87 @@ struct PanicAttackView: View {
     // Breathing Animation State
     @State private var isBreathingIn = false
     
+    private var isBreathingStep: Bool {
+        stepIndex == steps.count - 1
+    }
+    
     var body: some View {
         ZStack {
             Theme.background.ignoresSafeArea()
             
             VStack {
                 HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Theme.surface)
-                            .clipShape(Circle())
-                    }
+                    CloseButton(action: { dismiss() })
                     Spacer()
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
                 
-                ZStack {
+                if isBreathingStep {
+                    // Full breathing experience — replaces the standard step layout
+                    VStack(spacing: 30) {
+                        StepProgressIndicator(currentStep: stepIndex, totalSteps: steps.count, color: Theme.accentTeal)
+                            .padding(.top, 20)
+                        
+                        Spacer()
+                        
+                        ZStack {
+                            Circle()
+                                .stroke(Theme.accentTeal.opacity(0.3), lineWidth: 4)
+                                .frame(width: 260, height: 260)
+                            
+                            Circle()
+                                .fill(Theme.accentTeal.opacity(0.15))
+                                .frame(width: 260, height: 260)
+                                .scaleEffect(isBreathingIn ? 1.0 : 0.35)
+                            
+                            Text(isBreathingIn ? "Breathe In..." : "Breathe Out...")
+                                .font(.system(size: 22, weight: .semibold))
+                                .foregroundColor(Theme.accentTeal)
+                        }
+                        
+                        Text(steps[stepIndex].text)
+                            .font(Theme.stepFont)
+                            .foregroundColor(Theme.textMain)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 16) {
+                            Button(action: {
+                                withAnimation { stepIndex -= 1 }
+                            }) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "chevron.left")
+                                        .font(.system(size: 20, weight: .bold))
+                                    Text("Back")
+                                        .font(.system(size: 20, weight: .bold))
+                                }
+                                .foregroundColor(.white)
+                                .frame(height: 70)
+                                .padding(.horizontal, 24)
+                                .background(Color.white.opacity(0.15))
+                                .cornerRadius(35)
+                            }
+                            
+                            Button(action: { dismiss() }) {
+                                Text("Finish")
+                                    .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 70)
+                                    .background(Theme.accentTeal)
+                                    .cornerRadius(35)
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 40)
+                    }
+                    .onAppear {
+                        startBreathingAnimation()
+                    }
+                } else {
                     StepViewLayout(
                         step: steps[stepIndex],
                         stepIndex: stepIndex,
@@ -48,33 +109,6 @@ struct PanicAttackView: View {
                             }
                         } : nil
                     )
-                    
-                    // Show continuous breathing guide on the last step
-                    if stepIndex == steps.count - 1 {
-                        VStack {
-                            Spacer()
-                            ZStack {
-                                Circle()
-                                    .stroke(Theme.accentTeal.opacity(0.3), lineWidth: 4)
-                                    .frame(width: 250, height: 250)
-                                
-                                Circle()
-                                    .fill(Theme.accentTeal.opacity(0.2))
-                                    .frame(width: 250, height: 250)
-                                    .scaleEffect(isBreathingIn ? 1.0 : 0.4)
-                                
-                                Text(isBreathingIn ? "Breathe In..." : "Breathe Out...")
-                                    .font(.headline)
-                                    .foregroundColor(Theme.accentTeal)
-                                    .animation(nil, value: isBreathingIn) // Text crossfade
-                            }
-                            .offset(y: -50)
-                            .onAppear {
-                                startBreathingAnimation()
-                            }
-                            Spacer()
-                        }
-                    }
                 }
             }
         }
@@ -82,7 +116,6 @@ struct PanicAttackView: View {
     }
     
     private func startBreathingAnimation() {
-        // Simple 4-7-8 or 4-4-4 logic. Here we use a smooth 4 in, 4 out for simplicity.
         withAnimation(Animation.easeInOut(duration: 4.0).repeatForever(autoreverses: true)) {
             isBreathingIn.toggle()
         }
